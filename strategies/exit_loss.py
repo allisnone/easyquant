@@ -1,10 +1,24 @@
 from easyquant import StrategyTemplate
 import easyhistory
 
-def get_exit_price(codes=['300162']):
+def get_exit_price(hold_codes=['300162']):
     exit_dict={'300162': {'exit_half':22.5, 'exit_all': 19.0},'002696': {'exit_half':17.10, 'exit_all': 15.60}}
     easyhistory.init('D', export='csv', path="C:/hist",stock_codes=codes)
     easyhistory.update(path="C:/hist",stock_codes=codes)
+    his = easyhistory.History(dtype='D', path='C:/hist',codes=hold_codes)
+    exit_dict = dict()
+    for code in hold_codes:
+        #code_hist_df = hist[code].MA(1).tail(3).describe()
+        exit_data = dict()
+        describe_df = his[code].MA(1).tail(3).describe()
+        min_low = describe_df.loc['min'].low
+        min_close = describe_df.loc['min'].close
+        max_close = describe_df.loc['max'].close
+        max_high = describe_df.loc['max'].high
+        exit_data['exit_half'] = min_close
+        exit_data['exit_all'] = min_low
+        exit_dict[code] = exit_data
+    print('exit_dict=%s' % exit_dict)
     return exit_dict
 
 class Strategy(StrategyTemplate):
