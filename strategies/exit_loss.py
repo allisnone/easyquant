@@ -1,8 +1,10 @@
 from easyquant import StrategyTemplate
-
+import easyhistory
 
 def get_exit_price(codes=['300162']):
     exit_dict={'300162': {'exit_half':22.5, 'exit_all': 19.0},'002696': {'exit_half':17.10, 'exit_all': 15.60}}
+    easyhistory.init('D', export='csv', path="C:/hist",stock_codes=codes)
+    easyhistory.update(path="C:/hist",stock_codes=codes)
     return exit_dict
 
 class Strategy(StrategyTemplate):
