@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import easyquotation
+import easytrader
 from easyquant.push_engine.clock_engine import ClockEngine
 
 import easyquant
@@ -27,6 +28,11 @@ def get_broker_need_data(choose_broker):
 
 need_data = get_broker_need_data(broker)
 
+user = easytrader.use('yh')
+user.prepare('yh.json')
+holding_stocks = user.position['证券代码'].values.tolist()
+additional_stocks = ['162411', '000002','300162']
+push_stocks = holding_stocks + additional_stocks
 
 class LFEngine(PushBaseEngine):
     EventType = 'lf'
@@ -35,7 +41,8 @@ class LFEngine(PushBaseEngine):
         self.source = easyquotation.use('lf')
 
     def fetch_quotation(self):
-        return self.source.stocks(['162411', '000002','300162'])
+        #return self.source.stocks(['162411', '000002','300162'])
+        return self.source.stocks(push_stocks)
 
 quotation_choose = input('请输入使用行情引擎 1: sina 2: leverfun 十档 行情(目前只选择了 162411, 000002)\n:')
 
