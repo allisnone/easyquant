@@ -21,7 +21,7 @@ def get_exit_price(hold_codes=['300162']):#, has_update_history=False):
         exit_data['exit_half'] = min_close
         exit_data['exit_all'] = min_low
         exit_dict[code] = exit_data
-    print('exit_dict=%s' % exit_dict)
+    #print('exit_dict=%s' % exit_dict)
     return exit_dict
 
 class Strategy(StrategyTemplate):

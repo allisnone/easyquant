@@ -2,9 +2,10 @@
 import easyquotation
 import easytrader
 from easyquant.push_engine.clock_engine import ClockEngine
-
 import easyquant
 from easyquant import DefaultQuotationEngine, DefaultLogHandler, PushBaseEngine
+import datetime
+
 
 print('easyquant 测试 DEMO')
 """
@@ -54,10 +55,13 @@ quotation_engine = DefaultQuotationEngine if quotation_choose == '1' else LFEngi
 push_interval = int(input('请输入行情推送间隔(s)\n:'))
 quotation_engine.PushInterval = push_interval
 
-log_type_choose = input('请输入 log 记录方式: 1: 显示在屏幕 2: 记录到指定文件\n: ')
-log_type = 'stdout' if log_type_choose == '1' else 'file'
-
-log_filepath = input('请输入 log 文件记录路径\n: ') if log_type == 'file' else ''
+#log_type_choose = input('请输入 log 记录方式: 1: 显示在屏幕 2: 记录到指定文件\n: ')
+#log_type = 'stdout' if log_type_choose == '1' else 'file'
+log_type = 'file'
+this_time = datetime.datetime.now()
+date_str = this_time.strftime('%Y%m%d')
+#log_filepath = input('请输入 log 文件记录路径\n: ') if log_type == 'file' else ''
+log_filepath = 'strategy_%s' % date_str
 
 log_handler = DefaultLogHandler(name='测试', log_type=log_type, filepath=log_filepath)
 
