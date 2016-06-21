@@ -15,7 +15,7 @@ def get_exit_price(hold_codes=['300162']):#, has_update_history=False):
         exit_data = dict()
         describe_df = his[code].MA(1).tail(3).describe()
         min_low =round(describe_df.loc['min'].low, 2)
-        min_close = round(describe_df.loc['min'].close,2)
+        min_close = round(round(describe_df.loc['min'].close,2),2)
         max_close = round(describe_df.loc['max'].close,2)
         max_high = round(describe_df.loc['max'].high,2)
         exit_data['exit_half'] = min_close
