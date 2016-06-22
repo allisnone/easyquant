@@ -34,7 +34,7 @@ class FixedMainEngine(MainEngine):
         # 加载线程
         self._watch_thread = Thread(target=self._load_strategy)
         #positions = [p['stock_code'] for p in self.user.position]
-        positions = self.user.position['璇佸埜浠ｇ爜'].values.tolist()
+        positions = self.user.position['股票代码'].values.tolist()
         positions.extend(ext_stocks)
         for quotation_engine in quotation_engines:
             self.quotation_engines.append(quotation_engine(self.event_engine, self.clock_engine, positions,s))
