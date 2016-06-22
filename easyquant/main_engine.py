@@ -26,7 +26,7 @@ class MainEngine:
     """主引擎，负责行情 / 事件驱动引擎 / 交易"""
 
     def __init__(self, broker=None, need_data=None, quotation_engines=None,
-                 log_handler=DefaultLogHandler(), now=None, tzinfo=None):
+                 log_handler=DefaultLogHandler(), now=None, tzinfo=None,stocks=[]):
         """初始化事件 / 行情 引擎并启动事件引擎
         """
         self.log = log_handler
@@ -48,6 +48,7 @@ class MainEngine:
 
         self.event_engine = EventEngine()
         self.clock_engine = ClockEngine(self.event_engine, now, tzinfo)
+        self.stocks = stocks
 
         quotation_engines = quotation_engines or [DefaultQuotationEngine]
 
@@ -55,7 +56,7 @@ class MainEngine:
             quotation_engines = [quotation_engines]
         self.quotation_engines = []
         for quotation_engine in quotation_engines:
-            self.quotation_engines.append(quotation_engine(self.event_engine, self.clock_engine))
+            self.quotation_engines.append(quotation_engine(self.event_engine, self.clock_engine,self.stocks))
 
         # 保存读取的策略类
         self.strategies = OrderedDict()

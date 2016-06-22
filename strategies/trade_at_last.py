@@ -5,14 +5,14 @@ from easyquant import StrategyTemplate
 
 
 class Strategy(StrategyTemplate):
-    name = '测试策略1'
+    name = '尾盘策略'
 
     def init(self):
         now = self.clock_engine.now_dt
 
         # 注册时钟事件
         clock_type = "盘尾"
-        moment = dt.time(14, 56, 30, tzinfo=tz.tzlocal())
+        moment = dt.time(14, 50, 30, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment)
         # 注册时钟间隔事件, 不在交易阶段也会触发, clock_type == minute_interval
         minute_interval = 1.5
@@ -55,7 +55,7 @@ class Strategy(StrategyTemplate):
         # 使用 self.user 来操作账户，用法同 easytrader 用法
         # 使用 self.log.info('message') 来打印你所需要的 log
         print('demo1 的 log 使用自定义 log 的方式记录在 demo1.log')
-        self.log.info('\n\n策略1触发')
+        self.log.info('\n\n尾盘策略触发')
         self.log.info('行情数据: 万科价格: %s' % event.data['000002'])
         self.log.info('检查持仓')
         self.log.info(self.user.balance)
@@ -66,6 +66,8 @@ class Strategy(StrategyTemplate):
         :param event: event.data.clock_event 为 [0.5, 1, 3, 5, 15, 30, 60] 单位为分钟,  ['open', 'close'] 为开市、收市
             event.data.trading_state  bool 是否处于交易时间
         """
+        print('event.event_type=',event.event_type)
+        print('event.clock_event=',event.data.clock_event)
         if event.data.clock_event == 'open':
             # 开市了
             self.log.info('open')

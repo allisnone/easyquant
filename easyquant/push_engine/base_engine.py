@@ -15,11 +15,13 @@ class BaseEngine:
     EventType = 'base'
     PushInterval = 1
 
-    def __init__(self, event_engine, clock_engine):
+    def __init__(self, event_engine, clock_engine,stocks=[]):
         with open(ACCOUNT_OBJECT_FILE, 'rb') as f:
             self.user = dill.load(f)
+            f.close()
         self.event_engine = event_engine
         self.clock_engine = clock_engine
+        self.stocks = stocks
         self.is_active = True
         self.quotation_thread = Thread(target=self.push_quotation)
         self.quotation_thread.setDaemon(False)
