@@ -17,7 +17,7 @@ from .fixeddataengine import FixedDataEngine
 
 class FixedMainEngine(MainEngine):
     def __init__(self, broker, need_data='ht.json', quotation_engines=[FixedDataEngine],
-                 log_handler=DefaultLogHandler(), ext_stocks=[]):
+                 log_handler=DefaultLogHandler(), ext_stocks=[],s='sina'):
         super(FixedMainEngine, self).__init__(broker, need_data, [], log_handler)
         if type(quotation_engines) != list:
             quotation_engines = [quotation_engines]
@@ -33,10 +33,11 @@ class FixedMainEngine(MainEngine):
         self.lock = Lock()
         # 加载线程
         self._watch_thread = Thread(target=self._load_strategy)
-        positions = [p['stock_code'] for p in self.user.position]
+        #positions = [p['stock_code'] for p in self.user.position]
+        positions = self.user.position['璇佸埜浠ｇ爜'].values.tolist()
         positions.extend(ext_stocks)
         for quotation_engine in quotation_engines:
-            self.quotation_engines.append(quotation_engine(self.event_engine, self.clock_engine, positions))
+            self.quotation_engines.append(quotation_engine(self.event_engine, self.clock_engine, positions,s))
 
     def load(self, names, strategy_file):
         with self.lock:
