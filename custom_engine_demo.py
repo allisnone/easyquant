@@ -1,4 +1,4 @@
-
+# -*- coding:utf-8 -*-
 from custom import fixedmainengine
 from multiprocessing import freeze_support
 

@@ -1,6 +1,6 @@
 # !/usr/bin/python
 # vim: set fileencoding=utf8 :
-#
+# -*- coding:utf-8 -*-
 __author__ = 'keping.chu'
 
 import multiprocessing as mp
