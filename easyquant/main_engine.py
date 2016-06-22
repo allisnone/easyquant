@@ -91,4 +91,4 @@ class MainEngine:
             self.event_engine.register(ClockEngine.EventType, strategy.clock)
             for quotation_engine in self.quotation_engines:
                 self.event_engine.register(quotation_engine.EventType, strategy.run)
-        self.log.info('鍔犺浇绛栫暐瀹屾瘯')
+        self.log.info('load strategy')
