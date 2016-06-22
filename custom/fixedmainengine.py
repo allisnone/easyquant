@@ -68,7 +68,8 @@ class FixedMainEngine(MainEngine):
             if names is None or strategy_class.name in names:
                 self.strategies[strategy_module_name] = strategy_class
                 # 进程包装
-                _process = ProcessWrapper(strategy_class(self.user, log_handler=self.log, main_engine=self))
+                #_process = ProcessWrapper(strategy_class(self.user, log_handler=self.log, main_engine=self))
+                _process = ProcessWrapper(strategy_class(log_handler=self.log, main_engine=self))
                 # 缓存加载信息
                 self._process_map[strategy_file] = _process
                 self.strategy_list.append(_process)
