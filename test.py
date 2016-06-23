@@ -42,7 +42,7 @@ def get_push_stocks(additional_stocks=[]):
 
 
 def get_stop_stocks(given_stocks=[]):
-    quotation = easyquotation.use('sina')
+    quotation = easyquotation.use('qq')
     stop_stocks = []
     if given_stocks:
         this_quotation = quotation.stocks(given_stocks)
