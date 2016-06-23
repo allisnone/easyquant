@@ -2,6 +2,7 @@
 import sys
 import traceback
 import dill
+import easyquotation
 
 ACCOUNT_OBJECT_FILE = 'account.session'
 
