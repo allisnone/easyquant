@@ -3,7 +3,7 @@ import easyhistory
 
 def get_exit_price(hold_codes=['300162']):#, has_update_history=False):
     #exit_dict={'300162': {'exit_half':22.5, 'exit_all': 19.0},'002696': {'exit_half':17.10, 'exit_all': 15.60}}
-    has_update_history = False
+    has_update_history = True
     if not has_update_history:
         easyhistory.init('D', export='csv', path="C:/hist",stock_codes=hold_codes)
         easyhistory.update(path="C:/hist",stock_codes=hold_codes)
@@ -34,7 +34,7 @@ class Strategy(StrategyTemplate):
         self.log.info('行情数据:  %s' % event.data)
         self.log.info('检查持仓')
         self.log.info(self.user.balance)
-        self.log.info(self.user.position)
+        #self.log.info(self.user.position)
         self.log.info('\n')
         holding_stock = self.user.position['证券代码'].values.tolist()
         except_code_list = ['002766','601009','002696','002405','000932']
@@ -46,8 +46,8 @@ class Strategy(StrategyTemplate):
             if event_code in list(event.data.keys()):
                 event_data = event.data[event_code]
                 if event_data['buy']!=0 and event_data['sell']!=0:
-                    self.log.info('event_data：  %s'  % event_data)
-                    self.log.info('exit_data of stock %s：  %s'  % (event_code, exit_data[event_code]))
+                    #self.log.info('event_data：  %s'  % event_data)
+                    #self.log.info('exit_data of stock %s：  %s'  % (event_code, exit_data[event_code]))
                     self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
                     self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_all'],realtime_price=event_data['now'])
                 else:

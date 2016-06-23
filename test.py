@@ -80,8 +80,8 @@ class LFEngine(PushBaseEngine):
         stop_stocks = []
         for stock_code in (this_quotation.keys()):
             if this_quotation[stock_code]:
-                print(this_quotation[stock_code])
-                if this_quotation[stock_code]['buy']==0 and this_quotation[stock_code]['sell']==0:
+                #print(this_quotation[stock_code])
+                if this_quotation[stock_code]['ask1']==0 and this_quotation[stock_code]['volume']==0:
                     stop_stocks.append(stock_code)
                 else:
                     pass
@@ -90,16 +90,16 @@ class LFEngine(PushBaseEngine):
 
     def fetch_quotation(self):
         #return self.source.stocks(['162411', '000002','300162'])
-        global init_push_stocks
-        init_push_stocks = self.stocks
+        #global init_push_stocks
+        #init_push_stocks = self.stocks
         #print('init_push_stocks=',init_push_stocks)
-        stop_stocks = get_stop_stocks(init_push_stocks)
+        #stop_stocks = get_stop_stocks(init_push_stocks)
         #print('stop_stocks=', stop_stocks)
         #print(len(stop_stocks))
-        push_stocks = list(set(init_push_stocks).difference(set(stop_stocks)))
-        push_stocks = self.get_push_stocks()
+        #push_stocks = list(set(init_push_stocks).difference(set(stop_stocks)))
+        #push_stocks = self.get_push_stocks()
         #print('push_stocks=%s' % push_stocks)
-        return self.source.stocks(push_stocks)
+        return self.source.stocks(self.get_push_stocks())
 
 #quotation_choose = input('请输入使用行情引擎 1: sina 2: leverfun 十档 行情(目前只选择了 162411, 000002)\n:')
 quotation_choose = 2
@@ -110,7 +110,7 @@ quotation_engine.PushInterval = push_interval
 
 #log_type_choose = input('请输入 log 记录方式: 1: 显示在屏幕 2: 记录到指定文件\n: ')
 #log_type = 'stdout' if log_type_choose == '1' else 'file'
-log_type = 'stdout'
+log_type = 'file'
 this_time = datetime.datetime.now()
 date_str = this_time.strftime('%Y%m%d')
 #log_filepath = input('请输入 log 文件记录路径\n: ') if log_type == 'file' else ''
