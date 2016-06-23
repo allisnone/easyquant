@@ -29,7 +29,7 @@ class StrategyTemplate:
         quotation = easyquotation.use('qq')
         holding_stocks = self.user.position['证券代码'].values.tolist()
         #print('holding_stocks',holding_stocks)
-        init_push_stocks = list(set( holding_stocks) | set(self.stocks))
+        init_push_stocks = list(set( holding_stocks) | set(additional_stocks))
         if init_push_stocks:
             this_quotation = quotation.stocks(init_push_stocks)
         else:
