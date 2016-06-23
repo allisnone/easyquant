@@ -69,7 +69,7 @@ class LFEngine(PushBaseEngine):
         self.source = easyquotation.use('lf')
     
     def get_push_stocks(self):
-        quotation = easyquotation.use('sina')
+        quotation = easyquotation.use('qq')
         holding_stocks = self.user.position['证券代码'].values.tolist()
         #print('holding_stocks',holding_stocks)
         init_push_stocks = list(set( holding_stocks) | set(self.stocks))
