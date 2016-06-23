@@ -9,7 +9,7 @@ ACCOUNT_OBJECT_FILE = 'account.session'
 class StrategyTemplate:
     name = 'DefaultStrategyTemplate'
 
-    def __init__(self, log_handler, main_engine):
+    def __init__(self, log_handler, main_engine,additional_stocks=[]):
         with open(ACCOUNT_OBJECT_FILE, 'rb') as f:
             self.user = dill.load(f)
             f.close()
@@ -17,11 +17,32 @@ class StrategyTemplate:
         self.clock_engine = main_engine.clock_engine
         # 优先使用自定义 log 句柄, 否则使用主引擎日志句柄
         self.log = self.log_handler() or log_handler
+        self.push_stocks = self.get_push_stocks(additional_stocks)
         self.init()
 
     def init(self):
         # 进行相关的初始化操作
         pass
+    
+    def get_push_stocks(self, additional_stocks=[]):
+        quotation = easyquotation.use('qq')
+        holding_stocks = self.user.position['证券代码'].values.tolist()
+        #print('holding_stocks',holding_stocks)
+        init_push_stocks = list(set( holding_stocks) | set(self.stocks))
+        if init_push_stocks:
+            this_quotation = quotation.stocks(init_push_stocks)
+        else:
+            this_quotation = quotation.all
+        stop_stocks = []
+        for stock_code in (this_quotation.keys()):
+            if this_quotation[stock_code]:
+                #print(this_quotation[stock_code])
+                if this_quotation[stock_code]['ask1']==0 and this_quotation[stock_code]['volume']==0:
+                    stop_stocks.append(stock_code)
+                else:
+                    pass
+        push_stocks = list(set(init_push_stocks).difference(set(stop_stocks)))
+        return push_stocks
 
     def strategy(self, event):
         """:param event event.data 为所有股票的信息，结构如下

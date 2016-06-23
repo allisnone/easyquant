@@ -36,9 +36,10 @@ class Strategy(StrategyTemplate):
         self.log.info(self.user.balance)
         #self.log.info(self.user.position)
         self.log.info('\n')
-        holding_stock = self.user.position['证券代码'].values.tolist()
-        except_code_list = ['002766','601009','002696','002405','000932']
-        trade_code = list(set(holding_stock).difference(set(except_code_list)))
+        #holding_stock = self.user.position['证券代码'].values.tolist()
+        #except_code_list = ['002766','601009','002696','002405','000932']
+        #trade_code = list(set(holding_stock).difference(set(except_code_list)))
+        trade_code = self.push_stocks
         self.log.info('股票止损监测：  %s'  % trade_code)
         exit_data = get_exit_price(trade_code)
         self.log.info('止损点：  %s'  % exit_data)
