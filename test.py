@@ -79,10 +79,12 @@ class LFEngine(PushBaseEngine):
             this_quotation = quotation.all
         stop_stocks = []
         for stock_code in (this_quotation.keys()):
-            if this_quotation[stock_code]['buy']==0 and this_quotation[stock_code]['sell']==0:
-                stop_stocks.append(stock_code)
-            else:
-                pass
+            if this_quotation[stock_code]:
+                print(this_quotation[stock_code])
+                if this_quotation[stock_code]['buy']==0 and this_quotation[stock_code]['sell']==0:
+                    stop_stocks.append(stock_code)
+                else:
+                    pass
         push_stocks = list(set(init_push_stocks).difference(set(stop_stocks)))
         return push_stocks
 
