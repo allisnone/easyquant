@@ -27,7 +27,7 @@ class Strategy(StrategyTemplate):
             exit_data['exit_all'] = min_low
             exit_dict[code] = exit_data
         #print('exit_dict=%s' % exit_dict)
-    return exit_dict
+        return exit_dict
 
     def strategy(self, event):
         self.log.info('\n\n止损策略执行中。。。')
