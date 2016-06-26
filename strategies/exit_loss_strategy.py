@@ -35,7 +35,7 @@ class Strategy(StrategyTemplate):
         self.log.info('检查资金')
         self.log.info(self.user.balance)
         self.log.info('检查持仓')
-        #self.log.info(self.user.position)
+        self.log.info(self.user.position)
         self.log.info('\n')
         holding_stock = self.user.position['证券代码'].values.tolist()
         #except_code_list = ['002766','601009','002696','002405','000932']
