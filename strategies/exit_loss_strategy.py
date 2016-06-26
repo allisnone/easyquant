@@ -32,18 +32,19 @@ class Strategy(StrategyTemplate):
     def strategy(self, event):
         self.log.info('\n\n止损策略执行中。。。')
         self.log.info('行情数据:  %s' % event.data)
-        self.log.info('检查持仓')
+        self.log.info('检查资金')
         self.log.info(self.user.balance)
+        self.log.info('检查持仓')
         #self.log.info(self.user.position)
         self.log.info('\n')
         #holding_stock = self.user.position['证券代码'].values.tolist()
         #except_code_list = ['002766','601009','002696','002405','000932']
         #trade_code = list(set(holding_stock).difference(set(except_code_list)))
-        trade_code = self.trade_stocks
-        self.log.info('股票止损监测：  %s'  % trade_code)
-        exit_data = self.get_exit_price(trade_code)
+        #trade_code = self.trade_stocks
+        self.log.info('股票止损监测：  %s'  % self.trade_stocks)
+        exit_data = self.get_exit_price(self.trade_stocks)
         self.log.info('止损点：  %s'  % exit_data)
-        for event_code in trade_code:
+        for event_code in self.trade_stocks:
             if event_code in list(event.data.keys()):
                 event_data = event.data[event_code]
                 self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
