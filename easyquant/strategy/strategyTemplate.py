@@ -39,7 +39,7 @@ class StrategyTemplate:
         for stock_code in (this_quotation.keys()):
             if this_quotation[stock_code]:
                 #print(this_quotation[stock_code])
-                if this_quotation[stock_code]['ask1']==0 and this_quotation[stock_code]['volume']==0:
+                if this_quotation[stock_code]['volume']==0:
                     stop_stocks.append(stock_code)
                 else:
                     pass
