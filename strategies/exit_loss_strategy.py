@@ -46,6 +46,9 @@ class Strategy(StrategyTemplate):
         for event_code in trade_code:
             if event_code in list(event.data.keys()):
                 event_data = event.data[event_code]
+                self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
+                self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_all'],realtime_price=event_data['now'])
+                """
                 if event_data['buy']!=0 and event_data['sell']!=0:
                     #self.log.info('event_data：  %s'  % event_data)
                     #self.log.info('exit_data of stock %s：  %s'  % (event_code, exit_data[event_code]))
@@ -53,6 +56,7 @@ class Strategy(StrategyTemplate):
                     self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_all'],realtime_price=event_data['now'])
                 else:
                     self.log.info('股票  %s停牌。'  % event_code)
+                """
             else:
                 self.log.info('股票  %s需要加载行情推送。'  % event_code)
                 continue
