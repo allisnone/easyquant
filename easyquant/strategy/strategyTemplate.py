@@ -33,7 +33,7 @@ class StrategyTemplate:
     def get_push_stocks(self):
         quotation = easyquotation.use('qq')
         holding_stocks = self.user.position['证券代码'].values.tolist()
-        #print('holding_stocks',holding_stocks)
+        print('holding_stocks=',holding_stocks)
         init_push_stocks = list(set( holding_stocks) | set(self.additional_stocks))
         init_push_stocks = list(set(init_push_stocks).difference(set(self.except_stocks)))
         if init_push_stocks:
@@ -41,7 +41,8 @@ class StrategyTemplate:
         else:
             this_quotation = quotation.all
         stop_stocks = []
-        for stock_code in (this_quotation.keys()):
+        print(list(this_quotation.keys()))
+        for stock_code in list(this_quotation.keys()):
             if this_quotation[stock_code]:
                 #print(this_quotation[stock_code])
                 print(this_quotation[stock_code]['bid1_volume'], this_quotation[stock_code]['ask1_volume'])
