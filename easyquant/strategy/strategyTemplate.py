@@ -39,6 +39,7 @@ class StrategyTemplate:
         for stock_code in (this_quotation.keys()):
             if this_quotation[stock_code]:
                 #print(this_quotation[stock_code])
+                print(this_quotation[stock_code]['bid1_volume'], this_quotation[stock_code]['ask1_volume'])
                 if this_quotation[stock_code]['bid1_volume']>0 or this_quotation[stock_code]['ask1_volume']>0:
                     pass
                 else:
