@@ -81,10 +81,10 @@ class LFEngine(PushBaseEngine):
         for stock_code in (this_quotation.keys()):
             if this_quotation[stock_code]:
                 #print(this_quotation[stock_code])
-                if this_quotation[stock_code]['volume']==0:
-                    stop_stocks.append(stock_code)
-                else:
+                if this_quotation[stock_code]['bid1_volume']>0 or this_quotation[stock_code]['ask1_volume']>0:
                     pass
+                else:
+                    stop_stocks.append(stock_code)
         push_stocks = list(set(init_push_stocks).difference(set(stop_stocks)))
         return push_stocks
 
