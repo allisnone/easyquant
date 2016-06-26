@@ -18,19 +18,24 @@ class StrategyTemplate:
         self.clock_engine = main_engine.clock_engine
         # 优先使用自定义 log 句柄, 否则使用主引擎日志句柄
         self.log = self.log_handler() or log_handler
-        self.trade_stocks = self.get_push_stocks(additional_stocks,except_stocks)
+        self.additional_stocks = additional_stocks
+        self.except_stocks = except_stocks
         self.init()
 
     def init(self):
         # 进行相关的初始化操作
         pass
     
-    def get_push_stocks(self, additional_stocks=[],except_stocks=[]):
+    @property
+    def trade_stocks(self):
+        return self.get_push_stocks()
+    
+    def get_push_stocks(self):
         quotation = easyquotation.use('qq')
         holding_stocks = self.user.position['证券代码'].values.tolist()
         #print('holding_stocks',holding_stocks)
-        init_push_stocks = list(set( holding_stocks) | set(additional_stocks))
-        init_push_stocks = list(set(init_push_stocks).difference(set(except_stocks)))
+        init_push_stocks = list(set( holding_stocks) | set(self.additional_stocks))
+        init_push_stocks = list(set(init_push_stocks).difference(set(self.except_stocks)))
         if init_push_stocks:
             this_quotation = quotation.stocks(init_push_stocks)
         else:
