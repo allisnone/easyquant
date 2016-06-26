@@ -43,6 +43,7 @@ class StrategyTemplate:
                 if this_quotation[stock_code]['bid1_volume']>0 or this_quotation[stock_code]['ask1_volume']>0:
                     pass
                 else:
+                    print(stock_code)
                     stop_stocks.append(stock_code)
         push_stocks = list(set(init_push_stocks).difference(set(stop_stocks)))
         return push_stocks
