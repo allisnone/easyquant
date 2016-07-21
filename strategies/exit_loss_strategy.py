@@ -6,6 +6,10 @@ class Strategy(StrategyTemplate):
     name = '止损策略'
     #exit_data ={}
     #has_update_history = False
+    def init(self):
+        self.log.info(self.user.position)
+        
+        
     def get_exit_price(self, hold_codes=['300162']):#, has_update_history=False):
         #exit_dict={'300162': {'exit_half':22.5, 'exit_all': 19.0},'002696': {'exit_half':17.10, 'exit_all': 15.60}}
         has_update_history = True
