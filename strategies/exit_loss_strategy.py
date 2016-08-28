@@ -1,6 +1,6 @@
 from easyquant import StrategyTemplate
 from easyquant import DefaultLogHandler
-from easyquant import pds
+from easyquant import StockSQL
 import easyhistory
 
 
@@ -15,10 +15,12 @@ class Strategy(StrategyTemplate):
     def get_exit_price(self, hold_codes=['300162']):#, has_update_history=False):
         #exit_dict={'300162': {'exit_half':22.5, 'exit_all': 19.0},'002696': {'exit_half':17.10, 'exit_all': 15.60}}
         has_update_history = True
+        """
         if not has_update_history:
             easyhistory.init('D', export='csv', path="C:/hist",stock_codes=hold_codes)
             easyhistory.update(path="C:/hist",stock_codes=hold_codes)
             #has_update_history = True
+        """
         his = easyhistory.History(dtype='D', path='C:/hist',codes=hold_codes)
         exit_dict = dict()
         for code in hold_codes:
@@ -50,8 +52,9 @@ class Strategy(StrategyTemplate):
         #except_code_list = ['002766','601009','002696','002405','000932']
         #trade_code = list(set(holding_stock).difference(set(except_code_list)))
         #trade_code = self.trade_stocks
-        self.log.info('股票止损监测：  %s'  % self.trade_stocks)
-        exit_data = self.get_exit_price(self.trade_stocks)
+        self.log.info('股票止损监测：  %s'  % hold_stocks)
+        #exit_data = self.get_exit_price(self.trade_stocks)
+        exit_data = self.get_exit_price(hold_stocks)
         self.log.info('止损点：  %s'  % exit_data)
         for event_code in self.trade_stocks:
             if event_code in list(event.data.keys()):
