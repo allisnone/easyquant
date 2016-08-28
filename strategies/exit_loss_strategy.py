@@ -36,7 +36,7 @@ class Strategy(StrategyTemplate):
         return exit_dict
 
     def strategy(self, event):
-        his_sql = pds.StockSQL()
+        his_sql = StockSQL()
         hold_df,hold_stocks =his_sql.get_hold_stocks(accounts=['36005'])
         print(hold_df,hold_stocks)
         self.log.info('\n\n止损策略执行中。。。')
