@@ -1,4 +1,5 @@
 from easyquant import StrategyTemplate
+from easyquant import DefaultLogHandler
 import easyhistory
 
 
@@ -59,5 +60,11 @@ class Strategy(StrategyTemplate):
             else:
                 self.log.info('股票  %s需要加载行情推送。'  % event_code)
                 continue
+    
+    def log_handler(self):
+        """自定义 log 记录方式"""
+        return DefaultLogHandler(self.name, log_type='file', filepath='exit_strategry.log')
+
+    
                                         
 
