@@ -5,6 +5,7 @@ from easyquant.push_engine.clock_engine import ClockEngine
 import easyquant
 from easyquant import DefaultQuotationEngine, DefaultLogHandler, PushBaseEngine
 import datetime
+from easyquant import StockSQL
 
 
 #print('easyquant 测试 DEMO')
@@ -55,7 +56,11 @@ def get_stop_stocks(given_stocks=[]):
             pass
     return stop_stocks
 
-init_push_stocks = get_push_stocks(additional_stocks=['000002','300162'])
+#init_push_stocks = get_push_stocks(additional_stocks=['000002','300162'])
+
+his_sql = StockSQL()
+hold_df,hold_stocks =his_sql.get_hold_stocks(accounts=['36005'])
+
 #stop_stocks = get_stop_stocks(push_stocks)
 #print('stop_stocks=', stop_stocks)
 #print(len(stop_stocks))
@@ -70,9 +75,9 @@ class LFEngine(PushBaseEngine):
     
     def get_push_stocks(self):
         quotation = easyquotation.use('qq')
-        holding_stocks = self.user.position['证券代码'].values.tolist()
+        #holding_stocks = self.user.position['证券代码'].values.tolist()
         #print('holding_stocks',holding_stocks)
-        init_push_stocks = list(set( holding_stocks) | set(self.stocks))
+        init_push_stocks = self.stocks#list(set( holding_stocks) | set(self.stocks))
         if init_push_stocks:
             this_quotation = quotation.stocks(init_push_stocks)
         else:
@@ -105,7 +110,8 @@ class LFEngine(PushBaseEngine):
 quotation_choose = 2
 quotation_engine = DefaultQuotationEngine if quotation_choose == '1' else LFEngine
 
-push_interval = int(input('请输入行情推送间隔(s)\n:'))
+#push_interval = int(input('请输入行情推送间隔(s)\n:'))
+push_interval = 30
 quotation_engine.PushInterval = push_interval
 
 #log_type_choose = input('请输入 log 记录方式: 1: 显示在屏幕 2: 记录到指定文件\n: ')
@@ -119,6 +125,6 @@ log_filepath = 'strategy_log_%s.txt' % date_str
 log_handler = DefaultLogHandler(name='测试', log_type=log_type, filepath=log_filepath)
 
 
-m = easyquant.MainEngine(broker='yh', need_data='yh.json', quotation_engines=[quotation_engine], log_handler=log_handler,stocks=init_push_stocks)
+m = easyquant.MainEngine(broker='yh', need_data='yh.json', quotation_engines=[quotation_engine], log_handler=log_handler,stocks=hold_stocks)#)init_push_stocks)
 m.load_strategy()
 m.start()

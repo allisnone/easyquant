@@ -51,7 +51,11 @@ class YHTrader(WebTrader):
 
         accounts = self.do(self.config['account4stock'])
         if len(accounts) < 2:
-            raise Exception('无法获取沪深 A 股账户: %s' % accounts)
+            if throw:
+                raise Exception('无法获取沪深 A 股账户: %s' % accounts)
+            else:
+                print('retry to login again..')
+                self.login(throw)
         for account in accounts:
             if account['交易市场'] == '深A':
                 self.exchange_stock_account['0'] = account['股东代码'][0:10]
@@ -391,7 +395,7 @@ class MyTrader(YHTrader):
         column_list=['盈亏比例(%)', '参考市值', '证券名称', '买入冻结', '当前持仓', '卖出冻结', '股东代码', '交易市场', '参考市价', '证券代码', '股份可用', '参考成本价', '股份余额', '参考盈亏']
         replace_column = {'盈亏比例(%)':'p_rate', '参考市值':'market_value', '证券名称':'stock', '买入冻结':'b_freeze', '当前持仓':'h_share', '卖出冻结':"s_freeze", 
                           '股东代码':'shareholder', '交易市场':'market', '参考市价':'price', '证券代码':'code', '股份可用':'a_share', '参考成本价':'cost', 
-                          '股份余额':'remain_share', '参考盈亏':'profit'}
+                          '股份余额':'remain_share', '参考盈亏':'profit','更新时间':'u_time'}
         pos_data={}
         pos_df=pd.DataFrame(pos_data,columns=column_list)
         position_list=self.do(self.config['position'])
@@ -402,20 +406,22 @@ class MyTrader(YHTrader):
         for position in position_list:
             position.update({'更新时间': date_str})
             new_position_list.append(position)
-        for position in position_list:
+        #print('new_position_list=',new_position_list)
+        for position in new_position_list:
             new_position =dict()
             for raw_key in position:
                 new_position[replace_column[raw_key]] = position[raw_key]
             replace_posistion_list.append(new_position)
         #pos_df.columns = ['c1', 'c2']
-        print(new_position_list)
+        #print('replace_posistion_list=',replace_posistion_list)
+        
         position_list = new_position_list
         if position_list:
             if isinstance(position_list[0], dict):
                 column_list=list(position_list[0].keys())
             pos_df=pd.DataFrame(data=position_list,columns=column_list)
-            pos_df['盈亏比例'] = pos['盈亏比例(%)']
-            del pos['盈亏比例(%)']
+            pos_df['盈亏比例'] = pos_df['盈亏比例(%)']
+            del pos_df['盈亏比例(%)']
         """
         pd_data={}
         atr_df=pd.DataFrame(df_data,columns=column_list)

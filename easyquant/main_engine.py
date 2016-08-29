@@ -85,7 +85,7 @@ class MainEngine:
 
             if names is None or strategy_class.name in names:
                 self.strategies[strategy_module_name] = strategy_class
-                self.strategy_list.append(strategy_class(log_handler=self.log, main_engine=self))
+                self.strategy_list.append(strategy_class(log_handler=self.log, main_engine=self,stocks=self.stocks))
                 self.log.info('加载策略: %s' % strategy_module_name)
         for strategy in self.strategy_list:
             self.event_engine.register(ClockEngine.EventType, strategy.clock)

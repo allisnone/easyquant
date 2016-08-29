@@ -38,9 +38,10 @@ class Strategy(StrategyTemplate):
         return exit_dict
 
     def strategy(self, event):
-        his_sql = StockSQL()
-        hold_df,hold_stocks =his_sql.get_hold_stocks(accounts=['36005'])
-        print(hold_df,hold_stocks)
+        #his_sql = StockSQL()
+        #hold_df,hold_stocks =his_sql.get_hold_stocks(accounts=['36005'])
+        hold_stocks = self.trade_stocks
+        print(hold_stocks)
         self.log.info('\n\n止损策略执行中。。。')
         self.log.info('行情数据:  %s' % event.data)
         self.log.info('检查资金')
