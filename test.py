@@ -125,6 +125,7 @@ log_filepath = 'strategy_log_%s.txt' % date_str
 log_handler = DefaultLogHandler(name='测试', log_type=log_type, filepath=log_filepath)
 
 
-m = easyquant.MainEngine(broker='yh', need_data='yh.json', quotation_engines=[quotation_engine], log_handler=log_handler,stocks=hold_stocks)#)init_push_stocks)
+m = easyquant.MainEngine(broker='yh', need_data='yh.json', quotation_engines=[quotation_engine], 
+                         log_handler=log_handler,stocks=hold_stocks)#)init_push_stocks)
 m.load_strategy()
 m.start()
