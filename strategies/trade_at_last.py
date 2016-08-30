@@ -12,10 +12,10 @@ class Strategy(StrategyTemplate):
 
         # 注册时钟事件
         clock_type = "盘尾"
-        moment_last = dt.time(14, 35, 00, tzinfo=tz.tzlocal())
+        moment_last = dt.time(14, 35, 0, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment_last)
         clock_type = "五盘"
-        moment_middle = dt.time(13, 05, 00, tzinfo=tz.tzlocal())
+        moment_middle = dt.time(13, 5, 0, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment)
         # 注册时钟间隔事件, 不在交易阶段也会触发, clock_type == minute_interval
         minute_interval = 1
