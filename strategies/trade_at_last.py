@@ -14,7 +14,7 @@ class Strategy(StrategyTemplate):
         clock_type = "盘尾"
         moment_last = dt.time(14, 35, 0, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment_last)
-        clock_type = "五盘"
+        clock_type = "午盘"
         moment_middle = dt.time(13, 5, 0, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment_middle)
         # 注册时钟间隔事件, 不在交易阶段也会触发, clock_type == minute_interval
@@ -82,6 +82,18 @@ class Strategy(StrategyTemplate):
         elif event.data.clock_event == 1:
             # 5 分钟的 clock
             self.log.info("1分钟")
+            if event.data.trading_state:
+                pass
+            else:
+                pass
+        elif event.data.clock_event == '午盘':
+            #更新实时k线，选股
+            pass
+        elif event.data.clock_event == '盘尾':
+            #更新K线，预测次日趋势，选股
+            pass
+        else:
+            pass
 
     def log_handler(self):
         """自定义 log 记录方式"""
