@@ -2,7 +2,7 @@ from easyquant import StrategyTemplate
 from easyquant import DefaultLogHandler
 from easyquant import StockSQL
 import easyhistory
-import datetime
+
 
 
 class Strategy(StrategyTemplate):
@@ -40,11 +40,13 @@ class Strategy(StrategyTemplate):
 
     def strategy(self, event):
         #his_sql = StockSQL()
-        #hold_df,hold_stocks =his_sql.get_hold_stocks(accounts=['36005'])
+        #hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
         #print(datetime.datetime.now().minute)
+        """
         if (datetime.datetime.now().minute)%3==0:
             self.log.info('维持心跳,查询持仓信息：')
             self.log.info(self.user.position)
+        """
         hold_stocks = self.trade_stocks
         print(hold_stocks)
         self.log.info('\n\n止损策略执行中。。。')

@@ -59,7 +59,7 @@ def get_stop_stocks(given_stocks=[]):
 #init_push_stocks = get_push_stocks(additional_stocks=['000002','300162'])
 
 his_sql = StockSQL()
-hold_df,hold_stocks =his_sql.get_hold_stocks(accounts=['36005'])
+hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
 
 #stop_stocks = get_stop_stocks(push_stocks)
 #print('stop_stocks=', stop_stocks)

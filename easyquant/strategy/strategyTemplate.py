@@ -10,7 +10,7 @@ ACCOUNT_OBJECT_FILE = 'account.session'
 class StrategyTemplate:
     name = 'DefaultStrategyTemplate'
 
-    def __init__(self, log_handler, main_engine,stocks=[],additional_stocks=[],except_stocks=[]):
+    def __init__(self, log_handler, main_engine,stocks=[],additional_stocks=['000002'],except_stocks=['600556']):
         with open(ACCOUNT_OBJECT_FILE, 'rb') as f:
             self.user = dill.load(f)
             f.close()
@@ -90,10 +90,17 @@ class StrategyTemplate:
          'sell': '0.493',
          'turnover': '420004912',
          'volume': '206390073.351'}}
+    
         """
+    def heartbeat(self):
+        if (datetime.datetime.now().minute)%3==0:
+            self.log.info('维持心跳,查询持仓信息：')
+            self.log.info(self.user.position)
+        return
 
     def run(self, event):
         try:
+            self.heartbeat()
             self.strategy(event)
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -101,6 +108,7 @@ class StrategyTemplate:
                                                            exc_value,
                                                            exc_traceback)))
 
+    
     def clock(self, event):
         pass
 
