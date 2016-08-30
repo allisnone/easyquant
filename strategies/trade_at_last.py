@@ -17,6 +17,9 @@ class Strategy(StrategyTemplate):
         clock_type = "午盘"
         moment_middle = dt.time(13, 5, 0, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment_middle)
+        clock_type = "早盘"
+        moment_morning = dt.time(10, 30, 0, tzinfo=tz.tzlocal())
+        self.clock_engine.register_moment(clock_type, moment_morning)
         # 注册时钟间隔事件, 不在交易阶段也会触发, clock_type == minute_interval
         minute_interval = 1
         self.clock_engine.register_interval(minute_interval, trading=False)
@@ -86,6 +89,9 @@ class Strategy(StrategyTemplate):
                 pass
             else:
                 pass
+        elif event.data.clock_event == '早盘':
+            #更新实时k线，仓位控制
+            pass
         elif event.data.clock_event == '午盘':
             #更新实时k线，选股
             pass
