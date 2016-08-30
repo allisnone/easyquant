@@ -16,7 +16,7 @@ class Strategy(StrategyTemplate):
         self.clock_engine.register_moment(clock_type, moment_last)
         clock_type = "五盘"
         moment_middle = dt.time(13, 5, 0, tzinfo=tz.tzlocal())
-        self.clock_engine.register_moment(clock_type, moment)
+        self.clock_engine.register_moment(clock_type, moment_middle)
         # 注册时钟间隔事件, 不在交易阶段也会触发, clock_type == minute_interval
         minute_interval = 1
         self.clock_engine.register_interval(minute_interval, trading=False)
