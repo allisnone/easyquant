@@ -67,10 +67,11 @@ class Strategy(StrategyTemplate):
         for event_code in self.trade_stocks:
             if event_code in list(event.data.keys()):
                 event_data = event.data[event_code]
+                """
                 if exit_data[event_code]['exit_half'] > event_data['now'] and event_code not in ['002807','601009','300431','002284']:
                     self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
-                    
-                if exit_data[event_code]['exit_all'] > event_data['now'] and event_code not in ['002807','601009','300431','002284']:
+                """   
+                if exit_data[event_code]['exit_all'] > event_data['now']:# and event_code not in ['002807','601009','300431','002284']:
                     self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_all'],realtime_price=event_data['now'])
             else:
                 self.log.info('股票  %s需要加载行情推送。'  % event_code)
