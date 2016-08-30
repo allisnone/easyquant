@@ -12,10 +12,13 @@ class Strategy(StrategyTemplate):
 
         # 注册时钟事件
         clock_type = "盘尾"
-        moment = dt.time(14, 50, 30, tzinfo=tz.tzlocal())
+        moment_last = dt.time(14, 35, 00, tzinfo=tz.tzlocal())
+        self.clock_engine.register_moment(clock_type, moment_last)
+        clock_type = "五盘"
+        moment_middle = dt.time(13, 05, 00, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment)
         # 注册时钟间隔事件, 不在交易阶段也会触发, clock_type == minute_interval
-        minute_interval = 1.5
+        minute_interval = 1
         self.clock_engine.register_interval(minute_interval, trading=False)
 
     def strategy(self, event):
@@ -65,6 +68,9 @@ class Strategy(StrategyTemplate):
         :param event: event.data.clock_event 为 [0.5, 1, 3, 5, 15, 30, 60] 单位为分钟,  ['open', 'close'] 为开市、收市
             event.data.trading_state  bool 是否处于交易时间
         """
+        print('It is trading time: ', event)
+        print('It is trading time: ', event.data)
+        print('It is trading time: ', event.data.trading_state)
         print('event.event_type=',event.event_type)
         print('event.clock_event=',event.data.clock_event)
         if event.data.clock_event == 'open':
@@ -73,9 +79,9 @@ class Strategy(StrategyTemplate):
         elif event.data.clock_event == 'close':
             # 收市了
             self.log.info('close')
-        elif event.data.clock_event == 5:
+        elif event.data.clock_event == 1:
             # 5 分钟的 clock
-            self.log.info("5分钟")
+            self.log.info("1分钟")
 
     def log_handler(self):
         """自定义 log 记录方式"""
