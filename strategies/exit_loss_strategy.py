@@ -2,6 +2,8 @@ from easyquant import StrategyTemplate
 from easyquant import DefaultLogHandler
 from easyquant import StockSQL
 import easyhistory
+import datetime as dt
+from dateutil import tz
 
 
 
@@ -15,6 +17,9 @@ class Strategy(StrategyTemplate):
         clock_type = "盘前"
         moment_last = dt.time(9, 10, 0, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment_last)
+        
+        minute_interval = 5
+        self.clock_engine.register_interval(minute_interval, trading=False)
         
         
     def get_exit_price(self, hold_codes=['300162']):#, has_update_history=False):
@@ -69,17 +74,17 @@ class Strategy(StrategyTemplate):
         #trade_code = self.trade_stocks
         self.log.info('股票止损监测：  %s'  % hold_stocks)
         #exit_data = self.get_exit_price(self.trade_stocks)
-        exit_data = self.get_exit_price(hold_stocks)
-        self.log.info('止损点：  %s'  % exit_data)
+        #exit_data = self.get_exit_price(hold_stocks)
+        self.log.info('止损点：  %s'  % self.exit_data)
         for event_code in self.trade_stocks:
             if event_code in list(event.data.keys()):
                 event_data = event.data[event_code]
                 """
-                if exit_data[event_code]['exit_half'] > event_data['now'] and event_code not in ['002807','601009','300431','002284']:
-                    self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
+                if self.exit_data[event_code]['exit_half'] > event_data['now'] and event_code not in ['002807','601009','300431','002284']:
+                    self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
                 """   
-                if exit_data[event_code]['exit_all'] > event_data['now']:# and event_code not in ['002807','601009','300431','002284']:
-                    self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_data[event_code]['exit_all'],realtime_price=event_data['now'])
+                if self.exit_data[event_code]['exit_all'] > event_data['now']:# and event_code not in ['002807','601009','300431','002284']:
+                    self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_all'],realtime_price=event_data['now'])
             else:
                 self.log.info('股票  %s需要加载行情推送。'  % event_code)
                 continue
@@ -89,6 +94,22 @@ class Strategy(StrategyTemplate):
             #更新K线，预测次日趋势，选股
             print('event.clock_event=',event.data.clock_event)
             self.exit_data = self.get_exit_price(self.trade_stocks)
+            self.log.info('update exit date in the morning:')
+            self.log.info(self.exit_data)
+        elif event.data.clock_event == 5:
+            # 5 分钟的 clock
+            self.log.info("%s分钟" % event.data.clock_event)
+            print('event.clock_event=',event.data.clock_event)
+            self.exit_data = self.get_exit_price(self.trade_stocks)
+            if event.data.trading_state:
+                print('update exit date:')
+                self.log.info('event.clock_event=%s' % event.data.clock_event)
+                self.exit_data = self.get_exit_price(self.trade_stocks)
+                print(self.exit_data)
+                pass
+            else:
+                pass
+        
         else:
             pass
         pass
