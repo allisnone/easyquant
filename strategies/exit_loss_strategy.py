@@ -7,10 +7,14 @@ import easyhistory
 
 class Strategy(StrategyTemplate):
     name = '止损策略'
-    #exit_data ={}
+    exit_data ={}
     #has_update_history = False
     def init(self):
         self.log.info(self.user.position)
+        self.exit_data = self.get_exit_price(self.trade_stocks)
+        clock_type = "盘前"
+        moment_last = dt.time(9, 10, 0, tzinfo=tz.tzlocal())
+        self.clock_engine.register_moment(clock_type, moment_last)
         
         
     def get_exit_price(self, hold_codes=['300162']):#, has_update_history=False):
@@ -22,7 +26,10 @@ class Strategy(StrategyTemplate):
             easyhistory.update(path="C:/hist",stock_codes=hold_codes)
             #has_update_history = True
         """
-        his = easyhistory.History(dtype='D', path='C:/hist',codes=hold_codes)
+        #his = easyhistory.History(dtype='D', path='C:/hist',codes=hold_codes)
+        #data_path = 'C:/hist/day/data/'
+        data_path = 'C:/中国银河证券海王星/T0002/export/'
+        his = easyhistory.History(dtype='D', path=data_path, type='csv',codes=hold_codes)
         exit_dict = dict()
         for code in hold_codes:
             #code_hist_df = hist[code].MA(1).tail(3).describe()
@@ -78,6 +85,12 @@ class Strategy(StrategyTemplate):
                 continue
             
     def clock(self, event):
+        if event.data.clock_event == '盘前':
+            #更新K线，预测次日趋势，选股
+            print('event.clock_event=',event.data.clock_event)
+            self.exit_data = self.get_exit_price(self.trade_stocks)
+        else:
+            pass
         pass
     
     def log_handler(self):
