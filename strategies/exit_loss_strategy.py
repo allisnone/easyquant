@@ -28,7 +28,7 @@ class Strategy(StrategyTemplate):
         """
         #his = easyhistory.History(dtype='D', path='C:/hist',codes=hold_codes)
         #data_path = 'C:/hist/day/data/'
-        data_path = 'C:/中国银河证券海王星/T0002/export/'
+        data_path = 'C:/中国银河证券海王星/T0002/export/' 
         his = easyhistory.History(dtype='D', path=data_path, type='csv',codes=hold_codes)
         exit_dict = dict()
         for code in hold_codes:
