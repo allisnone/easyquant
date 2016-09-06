@@ -16,14 +16,14 @@ class Strategy(StrategyTemplate):
         self.log.info(self.user.position)
         self.set_monitor_stocks()
         self.exit_data = self.get_exit_price(self.trade_stocks)
-        
+        """
         clock_type = "盘前"
         moment_last = dt.time(9, 10, 0, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment_last)
         
         minute_interval = 5
         self.clock_engine.register_interval(minute_interval, trading=False)
-        
+        """
     def set_monitor_stocks(self):
         his_sql = StockSQL()
         hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
@@ -107,6 +107,7 @@ class Strategy(StrategyTemplate):
                 continue
             
     def clock(self, event):
+        """
         if event.data.clock_event == '盘前':
             #更新K线，预测次日趋势，选股
             print('event.clock_event=',event.data.clock_event)
@@ -131,6 +132,7 @@ class Strategy(StrategyTemplate):
         
         else:
             pass
+        """
         pass
     
     def log_handler(self):

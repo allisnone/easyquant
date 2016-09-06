@@ -71,6 +71,8 @@ class Strategy(StrategyTemplate):
         :param event: event.data.clock_event 为 [0.5, 1, 3, 5, 15, 30, 60] 单位为分钟,  ['open', 'close'] 为开市、收市
             event.data.trading_state  bool 是否处于交易时间
         """
+        pass
+    
         print('It is trading time: ', event)
         print('It is trading time: ', event.data)
         print('It is trading time: ', event.data.trading_state)
