@@ -68,7 +68,7 @@ class Strategy(StrategyTemplate):
             self.log.info(self.user.position)
         """
         #"""
-        if datetime.datetime.now().hour==9 and datetime.datetime.now().minute==0:
+        if dt.datetime.now().hour==9 and dt.datetime.now().minute==0:
             self.log.info('每天9点更新需要检测的止损股票：')
             #self.log.info(self.user.position)
             self.set_monitor_stocks()
