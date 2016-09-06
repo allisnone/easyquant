@@ -11,9 +11,12 @@ class Strategy(StrategyTemplate):
     name = '止损策略'
     exit_data ={}
     #has_update_history = False
+    monitor_stocks = []
     def init(self):
         self.log.info(self.user.position)
+        self.set_monitor_stocks()
         self.exit_data = self.get_exit_price(self.trade_stocks)
+        
         clock_type = "盘前"
         moment_last = dt.time(9, 10, 0, tzinfo=tz.tzlocal())
         self.clock_engine.register_moment(clock_type, moment_last)
@@ -21,10 +24,15 @@ class Strategy(StrategyTemplate):
         minute_interval = 5
         self.clock_engine.register_interval(minute_interval, trading=False)
         
-        
+    def set_monitor_stocks(self):
+        his_sql = StockSQL()
+        hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
+        self.monitor_stocks = available_sells
+            
     def get_exit_price(self, hold_codes=['300162']):#, has_update_history=False):
         #exit_dict={'300162': {'exit_half':22.5, 'exit_all': 19.0},'002696': {'exit_half':17.10, 'exit_all': 15.60}}
         has_update_history = True
+        hold_codes = self.monitor_stocks 
         """
         if not has_update_history:
             easyhistory.init('D', export='csv', path="C:/hist",stock_codes=hold_codes)
@@ -59,7 +67,15 @@ class Strategy(StrategyTemplate):
             self.log.info('维持心跳,查询持仓信息：')
             self.log.info(self.user.position)
         """
-        hold_stocks = self.trade_stocks
+        #"""
+        if datetime.datetime.now().hour==9 and datetime.datetime.now().minute==0:
+            self.log.info('每天9点更新需要检测的止损股票：')
+            #self.log.info(self.user.position)
+            self.set_monitor_stocks()
+            self.exit_data = self.get_exit_price(self.monitor_stocks)
+        #"""
+        #hold_stocks = self.trade_stocks
+        hold_stocks = self.monitor_stocks
         print(hold_stocks)
         self.log.info('\n\n止损策略执行中。。。')
         self.log.info('行情数据:  %s' % event.data)
@@ -72,11 +88,12 @@ class Strategy(StrategyTemplate):
         #except_code_list = ['002766','601009','002696','002405','000932']
         #trade_code = list(set(holding_stock).difference(set(except_code_list)))
         #trade_code = self.trade_stocks
-        self.log.info('股票止损监测：  %s'  % hold_stocks)
+        self.log.info('动态止损监测股票：  %s'  % hold_stocks)
         #exit_data = self.get_exit_price(self.trade_stocks)
         #exit_data = self.get_exit_price(hold_stocks)
         self.log.info('止损点：  %s'  % self.exit_data)
-        for event_code in self.trade_stocks:
+        self.log.info('行情推行股票 ：  %s'  % event.data.keys())
+        for event_code in hold_stocks:
             if event_code in list(event.data.keys()):
                 event_data = event.data[event_code]
                 """
@@ -93,18 +110,20 @@ class Strategy(StrategyTemplate):
         if event.data.clock_event == '盘前':
             #更新K线，预测次日趋势，选股
             print('event.clock_event=',event.data.clock_event)
-            self.exit_data = self.get_exit_price(self.trade_stocks)
+            self.set_monitor_stocks()
+            self.exit_data = self.get_exit_price(self.monitor_stocks)
             self.log.info('update exit date in the morning:')
             self.log.info(self.exit_data)
         elif event.data.clock_event == 5:
             # 5 分钟的 clock
             self.log.info("%s分钟" % event.data.clock_event)
             print('event.clock_event=',event.data.clock_event)
-            self.exit_data = self.get_exit_price(self.trade_stocks)
+            self.exit_data = self.get_exit_price(self.monitor_stocks)
+            self.log.info("trading_state:%" % event.data.trading_state)
             if event.data.trading_state:
-                print('update exit date:')
+                print('update exit data:')
                 self.log.info('event.clock_event=%s' % event.data.clock_event)
-                self.exit_data = self.get_exit_price(self.trade_stocks)
+                self.exit_data = self.get_exit_price(self.monitor_stocks)
                 print(self.exit_data)
                 pass
             else:
