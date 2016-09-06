@@ -76,7 +76,8 @@ class Strategy(StrategyTemplate):
         #"""
         #hold_stocks = self.trade_stocks
         hold_stocks = self.monitor_stocks
-        print(hold_stocks)
+        print('monitor_stocks= %s' % self.monitor_stocks)
+
         self.log.info('\n\n止损策略执行中。。。')
         self.log.info('行情数据:  %s' % event.data)
         self.log.info('检查资金')
@@ -88,12 +89,12 @@ class Strategy(StrategyTemplate):
         #except_code_list = ['002766','601009','002696','002405','000932']
         #trade_code = list(set(holding_stock).difference(set(except_code_list)))
         #trade_code = self.trade_stocks
-        self.log.info('动态止损监测股票：  %s'  % hold_stocks)
+        self.log.info('动态止损监测股票：  %s'  % self.monitor_stocks)
         #exit_data = self.get_exit_price(self.trade_stocks)
         #exit_data = self.get_exit_price(hold_stocks)
         self.log.info('止损点：  %s'  % self.exit_data)
-        self.log.info('行情推行股票 ：  %s'  % event.data.keys())
-        for event_code in hold_stocks:
+        self.log.info('行情推行股票 ：  %s'  % list(event.data.keys()))
+        for event_code in self.monitor_stocks:
             if event_code in list(event.data.keys()):
                 event_data = event.data[event_code]
                 """
