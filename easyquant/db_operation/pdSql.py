@@ -16,6 +16,7 @@ import time,os
 #ROOT_DIR="C:\work\stockAnalyze"
 RAW_HIST_DIR="C:/中国银河证券海王星/T0002/export/"  
 #HIST_DIR=ROOT_DIR+'/update/'
+"""
 import tradeTime as tt
 import sendEmail as sm
 import qq_quotation as qq
@@ -24,7 +25,7 @@ import qq_quotation as qq
 from . import tradeTime as tt
 from . import sendEmail as sm
 from . import qq_quotation as qq
-"""
+#"""
 
 def form_sql(table_name,oper_type='query',select_field=None,where_condition=None,insert_field=None,update_field=None,update_value=None):
     """
