@@ -876,7 +876,7 @@ class StockSQL(object):
         #hold_stocks = ['000932', '002362', '300431', '601009', '000007', '000932', '002405', '600570', '603398']
         hold_stocks = list(set(hold_stock_all) | set(hold_stock_all))
         #print('hold_stocks=',hold_stocks)
-        #print(hold_df)
+        print(hold_df)
         available_sells = []
         if not hold_df.empty:
             available_sell_df = hold_df[(hold_df['valid'])==1 & (hold_df['股份可用']>=100)]
