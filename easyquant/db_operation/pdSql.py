@@ -12,11 +12,10 @@ import tushare as ts
 import easytrader,easyhistory
 import time,os
 #ROOT_DIR='E:/work/stockAnalyze'
-ROOT_DIR="C:/中国银河证券海王星/T0002"
+#ROOT_DIR="C:/中国银河证券海王星/T0002"
 #ROOT_DIR="C:\work\stockAnalyze"
-RAW_HIST_DIR=ROOT_DIR+'/export/'  
+RAW_HIST_DIR="C:/中国银河证券海王星/T0002/export/"  
 #HIST_DIR=ROOT_DIR+'/update/'
-"""
 import tradeTime as tt
 import sendEmail as sm
 import qq_quotation as qq
@@ -25,7 +24,7 @@ import qq_quotation as qq
 from . import tradeTime as tt
 from . import sendEmail as sm
 from . import qq_quotation as qq
-
+"""
 
 def form_sql(table_name,oper_type='query',select_field=None,where_condition=None,insert_field=None,update_field=None,update_value=None):
     """
@@ -116,9 +115,9 @@ def get_raw_hist_df(code_str,latest_count=None):
 
 def get_yh_raw_hist_df(code_str,latest_count=None):
     file_type='csv'
-    ROOT_DIR="C:/中国银河证券海王星/T0002"
+    RAW_HIST_DIR="C:/中国银河证券海王星/T0002/export/"
     file_name=RAW_HIST_DIR+code_str+'.'+file_type
-    raw_column_list=['date','open','high','low','close','volume','rmb']
+    raw_column_list=['date','open','high','low','close','volume','amount']
     #print('file_name=',file_name)
     df_0=pd.DataFrame({},columns=raw_column_list)
     try:
@@ -127,28 +126,39 @@ def get_yh_raw_hist_df(code_str,latest_count=None):
         #print('pd.read_csv=',df)
         if df.empty:
             #print('code_str=',code_str)
+            df_0.to_csv(file_name,encoding='utf-8')
             return df_0
+        #else:
+        #    return
         last_date=df.tail(1).iloc[0].date
         if last_date=='数据来源:通达信':
             df=df[:-1]
             #print('数据来源:通达信')
             #print(df.tail(1).iloc[0].date)
             if df.empty:
+                df_0.to_csv(file_name,encoding='utf-8')
                 return df_0
+            #else:
+            #   return
             last_volume=df.tail(1).iloc[0].volume
             if int(last_volume)==0:
                 df=df[:-1]
             df['date'].astype(Timestamp)
-            df.to_csv(file_name,encoding='utf-8')
+            df_to_write = df.set_index('date')
+            df_to_write.to_csv(file_name,encoding='utf-8')
         else:
             pass
         return df
     except OSError as e:
         #print('OSError:',e)
+        df_0.to_csv(file_name,encoding='utf-8')
         return df_0
     
-def get_easyhistory_df(code_str):  #ta_lib
-    his = easyhistory.History(dtype='D', path='C:/hist',type='csv',codes=[code_str])
+def get_easyhistory_df(code_str,source='easyhistory'):  #ta_lib
+    data_path = 'C:/hist/day/data/'
+    if source=='YH' or source=='yh':
+        data_path = 'C:/中国银河证券海王星/T0002/export/'
+    his = easyhistory.History(dtype='D', path=data_path,type='csv',codes=[code_str])
     res = his.get_hist_indicator(code_str)
     return res
 
@@ -245,9 +255,9 @@ def get_all_code(hist_dir):
             all_code.append(code)
     return all_code
 
-def get_different_symbols():
+def get_different_symbols(hist_dir='C:/hist/day/data/'):
     indexs= ['cyb', 'zxb', 'sz', 'sh', 'sz300', 'zx300', 'hs300', 'sh50']
-    all_codes = get_all_code(hist_dir='C:/hist/day/data/')
+    all_codes = get_all_code(hist_dir)
     funds =[]
     b_stock = []
     for code in all_codes:
@@ -289,7 +299,7 @@ def get_position(broker='yh',user_file='yh.json'):
     time_format = date_format + ' %X'
     time_str=this_day.strftime(time_format)
     holding_stocks_df['update'] = time_str
-    holding_stocks_df['valid'] = 1
+    #holding_stocks_df['valid'] = 1
     """
             当前持仓  股份可用     参考市值   参考市价  股份余额    参考盈亏 交易市场   参考成本价 盈亏比例(%)        股东代码  \
             0  6300  6300  24885.0   3.95  6300  343.00   深A   3.896   1.39%  0130010635   
@@ -331,12 +341,15 @@ def update_one_stock(symbol,realtime_update=False,dest_dir='C:/hist/day/data/', 
     #print(next_date_str)
     dest_file_name = dest_dir+ '%s.csv' % symbol
     dest_df = get_raw_hist_df(code_str=symbol)
+    file_type='csv'
+    RAW_HIST_DIR = "C:/中国银河证券海王星/T0002/export/"
+    yh_file_name = RAW_HIST_DIR+symbol+'.'+file_type
     if dest_df.empty:
         if symbol in index_symbol_maps.keys():
             symbol = index_symbol_maps[symbol]
-        yh_index_df = get_yh_raw_hist_df(code_str=symbol)
-        yh_index_df['amount'] = yh_index_df['rmb']
-        del yh_index_df['rmb']
+        yh_file_name = RAW_HIST_DIR+symbol+'.'+file_type
+        #yh_index_df = get_yh_raw_hist_df(code_str=symbol)
+        yh_index_df = pd.read_csv(yh_file_name)
         yh_index_df['factor'] = 1.0
         yh_df = yh_index_df.set_index('date')
         yh_df.to_csv(dest_file_name ,encoding='utf-8')
@@ -377,9 +390,9 @@ def update_one_stock(symbol,realtime_update=False,dest_dir='C:/hist/day/data/', 
             yh_symbol = symbol
             if symbol in index_symbol_maps.keys():
                 yh_symbol = index_symbol_maps[index_name]
-            yh_index_df = get_yh_raw_hist_df(code_str=yh_symbol)
-            yh_index_df['amount'] = yh_index_df['rmb']
-            del yh_index_df['rmb']
+            yh_file_name = RAW_HIST_DIR+yh_symbol+'.'+file_type
+            #yh_index_df = get_yh_raw_hist_df(code_str=symbol)
+            yh_index_df = pd.read_csv(yh_file_name,encoding='GBK')
             yh_index_df['factor'] = FIX_FACTOR
             yh_last_date = yh_index_df.tail(1).iloc[0]['date']
             #print('yh_last_date=',yh_last_date)
@@ -634,9 +647,9 @@ class StockSQL(object):
             yh_symbol = symbol
             if symbol in index_symbol_maps.keys():
                 yh_symbol = index_symbol_maps[index_name]
-            yh_index_df = get_yh_raw_hist_df(code_str=yh_symbol)
-            yh_index_df['amount'] = yh_index_df['rmb']
-            del yh_index_df['rmb']
+            yh_file_name = RAW_HIST_DIR+symbol+'.'+file_type
+            #yh_index_df = get_yh_raw_hist_df(code_str=symbol)
+            yh_index_df = pd.read_csv(yh_file_name)
             yh_index_df['factor'] = FIX_FACTOR
             yh_last_date = yh_index_df.tail(1).iloc[0]['date']
             print('yh_last_date=',yh_last_date)
@@ -715,9 +728,9 @@ class StockSQL(object):
         #table_update_times = self.get_table_update_time()
         for index_name in index_list:
             yh_symbol = index_symbol_maps[index_name]
-            yh_index_df = get_yh_raw_hist_df(code_str=yh_symbol)
-            yh_index_df['amount'] = yh_index_df['rmb']
-            del yh_index_df['rmb']
+            yh_file_name = RAW_HIST_DIR+symbol+'.'+file_type
+            #yh_index_df = get_yh_raw_hist_df(code_str=symbol)
+            yh_index_df = pd.read_csv(yh_file_name)
             yh_index_df['factor'] = FIX_FACTOR
             try:
                 date_data = self.query_data(table=index_name,fields='date',condition="date>='%s'" % last_date_str)
@@ -805,13 +818,37 @@ class StockSQL(object):
                 except:
                     pass
                 #self.insert_table(data_frame=position_df,table_name='balance')
+                
+    def get_except_codes(self):
+        #从数据库获取除外的股票代码，比如高风险或者长期持有，或者新股中签等
+        except_df = self.query_data(table='stock.except',fields='code',condition='valid=1')
+        return except_df['code'].values.tolist()
+    
     def update_sql_position(self, users={'account':'36005','broker':'yh','json':'yh.json'}):
         try:
             account_id = users['account']
             broker = users['broker']
             user_file = users['json']
             position_df,balance = get_position(broker, user_file)
+            except_codes = self.get_except_codes()
+            except_holds = list(set(except_codes) & set(position_df['证券代码'].values.tolist()))
+            """
+            if except_holds:
+                position_df['valid'] = np.where((position_df['证券代码']==except_holds[0]),0,1)
+                except_holds.pop(0)
+                for code in except_holds:
+                    #position_df.loc['证券代码','valid'] = 0
+                    position_df['valid'] = np.where((position_df['证券代码']==code),0,position_df['valid'])
+            else:
+                position_df['valid'] = 1
+            """
+            position_df['valid'] = 1
+            for code in except_holds:
+                position_df['valid'][position_df['证券代码']==code] = 0
+            #df=df.tail(20)
+            #df[['close']].apply(lambda x: (x - x.min()) / (x.max()-x.nin()))   
             self.hold[account_id] =  position_df
+            #print(position_df)
             table_name='acc%s'%account_id
             try:
                 self.drop_table(table_name)
@@ -820,6 +857,7 @@ class StockSQL(object):
             self.insert_table(data_frame=position_df,table_name='acc%s'%account_id)
             return
         except:
+            time.sleep(10)
             self.update_sql_position(users)
     
     def get_hold_stocks(self,accounts=['36005', '38736']):
