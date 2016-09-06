@@ -96,6 +96,16 @@ class StrategyTemplate:
         if (datetime.datetime.now().minute)%3==0:
             self.log.info('维持心跳,查询持仓信息：')
             self.log.info(self.user.position)
+            if  self.user.position.empty:
+                #self.user.prepare('yh.json')
+                account_dict={
+                              "inputaccount": "331600036005",
+                              "trdpwd": "F71281A2D62C4b3a8268C6453E9C42212CCC5BA9AB89CAFF4E97CC31AE0E4C48"
+                }
+                self.log.info('心跳丢失,再次登录查询持仓信息：')
+                self.user.prepare('yh.json')
+                #self.user.prepare(account_dict)
+                self.log.info(self.user.position)
         return
 
     def run(self, event):

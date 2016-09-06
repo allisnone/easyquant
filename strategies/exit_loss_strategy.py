@@ -1,6 +1,6 @@
 from easyquant import StrategyTemplate
 from easyquant import DefaultLogHandler
-from easyquant import StockSQL
+from easyquant import StockSQL,get_exit_price
 import easyhistory
 import datetime as dt
 from dateutil import tz
@@ -15,7 +15,7 @@ class Strategy(StrategyTemplate):
     def init(self):
         self.log.info(self.user.position)
         self.set_monitor_stocks()
-        self.exit_data = self.get_exit_price(self.trade_stocks)
+        self.exit_data = get_exit_price(self.trade_stocks)
         """
         clock_type = "盘前"
         moment_last = dt.time(9, 10, 0, tzinfo=tz.tzlocal())
@@ -29,7 +29,7 @@ class Strategy(StrategyTemplate):
         hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
         self.monitor_stocks = available_sells
             
-    def get_exit_price(self, hold_codes=['300162']):#, has_update_history=False):
+    def get_exit_price0(self, hold_codes=['300162']):#, has_update_history=False):
         #exit_dict={'300162': {'exit_half':22.5, 'exit_all': 19.0},'002696': {'exit_half':17.10, 'exit_all': 15.60}}
         has_update_history = True
         hold_codes = self.monitor_stocks 
@@ -59,9 +59,6 @@ class Strategy(StrategyTemplate):
         return exit_dict
 
     def strategy(self, event):
-        #his_sql = StockSQL()
-        #hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
-        #print(datetime.datetime.now().minute)
         """
         if (datetime.datetime.now().minute)%3==0:
             self.log.info('维持心跳,查询持仓信息：')
@@ -72,12 +69,8 @@ class Strategy(StrategyTemplate):
             self.log.info('每天9点更新需要检测的止损股票：')
             #self.log.info(self.user.position)
             self.set_monitor_stocks()
-            self.exit_data = self.get_exit_price(self.monitor_stocks)
+            self.exit_data = get_exit_price(self.monitor_stocks)
         #"""
-        #hold_stocks = self.trade_stocks
-        hold_stocks = self.monitor_stocks
-        print('monitor_stocks= %s' % self.monitor_stocks)
-
         self.log.info('\n\n止损策略执行中。。。')
         self.log.info('行情数据:  %s' % event.data)
         self.log.info('检查资金')
@@ -90,8 +83,6 @@ class Strategy(StrategyTemplate):
         #trade_code = list(set(holding_stock).difference(set(except_code_list)))
         #trade_code = self.trade_stocks
         self.log.info('动态止损监测股票：  %s'  % self.monitor_stocks)
-        #exit_data = self.get_exit_price(self.trade_stocks)
-        #exit_data = self.get_exit_price(hold_stocks)
         self.log.info('止损点：  %s'  % self.exit_data)
         self.log.info('行情推行股票 ：  %s'  % list(event.data.keys()))
         for event_code in self.monitor_stocks:
@@ -100,9 +91,14 @@ class Strategy(StrategyTemplate):
                 """
                 if self.exit_data[event_code]['exit_half'] > event_data['now'] and event_code not in ['002807','601009','300431','002284']:
                     self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
-                """   
-                if self.exit_data[event_code]['exit_all'] > event_data['now']:# and event_code not in ['002807','601009','300431','002284']:
-                    self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_all'],realtime_price=event_data['now'])
+                """
+                realtime_p =  event_data['now'] 
+                #print('realtime_price=',realtime_p)
+                if event_code=='600152':
+                    #realtime_p = 10.8
+                    pass
+                if self.exit_data[event_code]['exit_all'] > realtime_p:# and event_code not in ['002807','601009','300431','002284']:
+                    self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_all'],realtime_price=realtime_p)
             else:
                 self.log.info('股票  %s需要加载行情推送。'  % event_code)
                 continue
@@ -138,7 +134,9 @@ class Strategy(StrategyTemplate):
     
     def log_handler(self):
         """自定义 log 记录方式"""
-        return DefaultLogHandler(self.name, log_type='file', filepath='exit_strategry.log')
+        this_time = dt.datetime.now()
+        date_str = this_time.strftime('%Y%m%d')
+        return DefaultLogHandler(self.name, log_type='file', filepath='exit_strategry_%s.log' %date_str)
 
     
                                         
