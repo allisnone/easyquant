@@ -12,6 +12,8 @@ from .helpers import EntrustProp
 from .webtrader import WebTrader, NotLoginError
 import datetime
 
+import sendEmail as sm
+
 log = helpers.get_logger(__file__)
 
 VERIFY_CODE_POS = 0
@@ -784,44 +786,49 @@ class MyTrader(YHTrader):
         trade_state = 0
         #print(self.position)
         pos_holding_amount = self.get_position_info(stock_code, info_column='股份余额')
+        msg_content = ''
         if pos_holding_amount<0:
             log.debug('帐户空仓，无任何持仓股票')
             trade_state = -2
         else:
             if trade_direct=='B':
                 if pos_holding_amount<pre_holding_amount:
-                    log.debug('原计划买入 %s %s股，实质卖出%s股' % (stock_code,trade_amount,(pre_holding_amount-pos_holding_amount)))
+                    msg_content = '原计划买入 %s %s股，实质卖出%s股' % (stock_code,trade_amount,(pre_holding_amount-pos_holding_amount))
                     trade_state = -1
                 elif pos_holding_amount==pre_holding_amount:
-                    log.debug('原计划买入 %s %s股，实质无任何买入' % (stock_code,trade_amount))
+                    msg_content = '原计划买入 %s %s股，实质无任何买入' % (stock_code,trade_amount)
                     trade_state = 0
                 elif pos_holding_amount<(pre_holding_amount+trade_amount):
-                    log.debug('原计划买入 %s %s股，实质部分买入%s股' % (stock_code,trade_amount,(pos_holding_amount-pre_holding_amount)))
+                    msg_content = '原计划买入 %s %s股，实质部分买入%s股' % (stock_code,trade_amount,(pos_holding_amount-pre_holding_amount))
                     trade_state = 0.5
                 elif pos_holding_amount==(pre_holding_amount+trade_amount):
-                    log.debug('按原计划买入 %s %s股' % (stock_code,trade_amount))
+                    msg_content = '按原计划买入 %s %s股' % (stock_code,trade_amount)
                     trade_state = 1
                 else:
-                    log.debug('原计划买入 %s %s股，实质超额买入，共买入%s股' % (stock_code,trade_amount,(pos_holding_amount-pre_holding_amount)))
+                    msg_content = '原计划买入 %s %s股，实质超额买入，共买入%s股' % (stock_code,trade_amount,(pos_holding_amount-pre_holding_amount))
                     trade_state = 2
             elif trade_direct=='S':
                 if pos_holding_amount>pre_holding_amount:
-                    log.debug('原计划卖出 %s %s股，实质买入%s股' % (stock_code,trade_amount,(pos_holding_amount-pre_holding_amount)))
+                    msg_content = '原计划卖出 %s %s股，实质买入%s股' % (stock_code,trade_amount,(pos_holding_amount-pre_holding_amount))
                     trade_state = -1
                 elif pos_holding_amount==pre_holding_amount:
-                    log.debug('原计划卖出 %s %s股，实质无任何卖出' % (stock_code,trade_amount))
+                    msg_content = '原计划卖出 %s %s股，实质无任何卖出' % (stock_code,trade_amount)
                     trade_state = 0
                 elif pos_holding_amount>(pre_holding_amount-trade_amount):
-                    log.debug('原计划卖出 %s %s股，实质部分卖出%s股' % (stock_code,trade_amount,(pre_holding_amount-pos_holding_amount)))
+                    msg_content = '原计划卖出 %s %s股，实质部分卖出%s股' % (stock_code,trade_amount,(pre_holding_amount-pos_holding_amount))
                     trade_state = 0.5
                 elif pos_holding_amount==(pre_holding_amount-trade_amount):
-                    log.debug('按原计划卖出%s %s股' % (stock_code,trade_amount))
+                    msg_content = '按原计划卖出%s %s股' % (stock_code,trade_amount)
                     trade_state = 1
                 else:
-                    log.debug('原计划卖出 %s %s股，实质超额卖出，共卖出%s股' % (stock_code,trade_amount,(pre_holding_amount-pos_holding_amount)))
+                    msg_content = '原计划卖出 %s %s股，实质超额卖出，共卖出%s股' % (stock_code,trade_amount,(pre_holding_amount-pos_holding_amount))
                     trade_state = 2
             else:
                 trade_state = -2
+        if msg_content:
+            log.debug(msg_content)
+            sub = '%s 交易结果确认' % stock_code
+            sm.send_mail(sub,msg_content)
         return trade_state
     
     def get_realtime_k_data(self,symbol):
