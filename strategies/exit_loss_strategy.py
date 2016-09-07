@@ -90,17 +90,29 @@ class Strategy(StrategyTemplate):
             for event_code in self.monitor_stocks:
                 if event_code in list(event.data.keys()):
                     event_data = event.data[event_code]
+                    exit_all_price = self.exit_data[event_code]['exit_all']
+                    exit_half_price = self.exit_data[event_code]['exit_half']
+                    exit_chg_rate = self.exit_data[event_code]['exit_rate']
+                    t_rate = self.exit_data[event_code]['t_rate']
+                    realtime_p =  event_data['now']
+                    if exit_all_price:
+                        pass
+                    else:
+                        last_close = event_data['close']
+                        if last_close:
+                            exit_all_price = last_close * (1+exit_chg_rate)
+                            exit_half_price = exit_all_price
+                        else:
+                            pass
                     """
-                    if self.exit_data[event_code]['exit_half'] > event_data['now'] and event_code not in ['002807','601009','300431','002284']:
-                        self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
+                    if exit_half_price > realtime_p and exit_half_price and realtime_p:# and event_code not in ['002807','601009','300431','002284']:
+                        self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_half_price,realtime_price=realtime_p,sell_rate=0.5)
                     """
-                    realtime_p =  event_data['now'] 
-                    #print('realtime_price=',realtime_p)
                     if event_code=='600152':
                         #realtime_p = 10.8
                         pass
-                    if self.exit_data[event_code]['exit_all'] > realtime_p:# and event_code not in ['002807','601009','300431','002284']:
-                        self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_all'],realtime_price=realtime_p)
+                    if exit_all_price > realtime_p and exit_all_price and realtime_p:# and event_code not in ['002807','601009','300431','002284']:
+                        self.user.sell_stock_by_low(stock_code=event_code,exit_price=exit_all_price,realtime_price=realtime_p,sell_rate=1.0)
                 else:
                     self.log.info('股票  %s需要加载行情推送。'  % event_code)
                     continue
