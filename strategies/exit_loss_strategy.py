@@ -1,5 +1,6 @@
 from easyquant import StrategyTemplate
 from easyquant import DefaultLogHandler
+from easyquant import etime
 from easyquant import StockSQL,get_exit_price
 import easyhistory
 import datetime as dt
@@ -85,23 +86,26 @@ class Strategy(StrategyTemplate):
         self.log.info('动态止损监测股票：  %s'  % self.monitor_stocks)
         self.log.info('止损点：  %s'  % self.exit_data)
         self.log.info('行情推行股票 ：  %s'  % list(event.data.keys()))
-        for event_code in self.monitor_stocks:
-            if event_code in list(event.data.keys()):
-                event_data = event.data[event_code]
-                """
-                if self.exit_data[event_code]['exit_half'] > event_data['now'] and event_code not in ['002807','601009','300431','002284']:
-                    self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
-                """
-                realtime_p =  event_data['now'] 
-                #print('realtime_price=',realtime_p)
-                if event_code=='600152':
-                    #realtime_p = 10.8
-                    pass
-                if self.exit_data[event_code]['exit_all'] > realtime_p:# and event_code not in ['002807','601009','300431','002284']:
-                    self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_all'],realtime_price=realtime_p)
-            else:
-                self.log.info('股票  %s需要加载行情推送。'  % event_code)
-                continue
+        if etime.is_tradetime(dt.datetime.now()) and etime.is_trade_date(dt.datetime.now()):
+            for event_code in self.monitor_stocks:
+                if event_code in list(event.data.keys()):
+                    event_data = event.data[event_code]
+                    """
+                    if self.exit_data[event_code]['exit_half'] > event_data['now'] and event_code not in ['002807','601009','300431','002284']:
+                        self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_half'],realtime_price=event_data['now'],sell_rate=0.5)
+                    """
+                    realtime_p =  event_data['now'] 
+                    #print('realtime_price=',realtime_p)
+                    if event_code=='600152':
+                        #realtime_p = 10.8
+                        pass
+                    if self.exit_data[event_code]['exit_all'] > realtime_p:# and event_code not in ['002807','601009','300431','002284']:
+                        self.user.sell_stock_by_low(stock_code=event_code,exit_price=self.exit_data[event_code]['exit_all'],realtime_price=realtime_p)
+                else:
+                    self.log.info('股票  %s需要加载行情推送。'  % event_code)
+                    continue
+        else:
+            print('Not trade time....')
             
     def clock(self, event):
         """
