@@ -30,34 +30,6 @@ class Strategy(StrategyTemplate):
         hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
         self.monitor_stocks = available_sells
             
-    def get_exit_price0(self, hold_codes=['300162']):#, has_update_history=False):
-        #exit_dict={'300162': {'exit_half':22.5, 'exit_all': 19.0},'002696': {'exit_half':17.10, 'exit_all': 15.60}}
-        has_update_history = True
-        hold_codes = self.monitor_stocks 
-        """
-        if not has_update_history:
-            easyhistory.init('D', export='csv', path="C:/hist",stock_codes=hold_codes)
-            easyhistory.update(path="C:/hist",stock_codes=hold_codes)
-            #has_update_history = True
-        """
-        #his = easyhistory.History(dtype='D', path='C:/hist',codes=hold_codes)
-        #data_path = 'C:/hist/day/data/'
-        data_path = 'C:/中国银河证券海王星/T0002/export/' 
-        his = easyhistory.History(dtype='D', path=data_path, type='csv',codes=hold_codes)
-        exit_dict = dict()
-        for code in hold_codes:
-            #code_hist_df = hist[code].MA(1).tail(3).describe()
-            exit_data = dict()
-            describe_df = his[code].MA(1).tail(3).describe()
-            min_low =round(describe_df.loc['min'].low, 2)
-            min_close = round(round(describe_df.loc['min'].close,2),2)
-            max_close = round(describe_df.loc['max'].close,2)
-            max_high = round(describe_df.loc['max'].high,2)
-            exit_data['exit_half'] = min_close
-            exit_data['exit_all'] = min_low
-            exit_dict[code] = exit_data
-        #print('exit_dict=%s' % exit_dict)
-        return exit_dict
 
     def strategy(self, event):
         """
@@ -66,7 +38,7 @@ class Strategy(StrategyTemplate):
             self.log.info(self.user.position)
         """
         #"""
-        if dt.datetime.now().hour==9 and dt.datetime.now().minute==0:
+        if (dt.datetime.now().hour==9 and dt.datetime.now().minute==0) or (not self.exit_data):
             self.log.info('每天9点更新需要检测的止损股票：')
             #self.log.info(self.user.position)
             self.set_monitor_stocks()
