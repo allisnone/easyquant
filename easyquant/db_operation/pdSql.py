@@ -507,6 +507,8 @@ def get_exit_price(hold_codes=['300162'],data_path='C:/中国银河证券海王�
     for code in hold_codes:
         #code_hist_df = hist[code].MA(1).tail(3).describe()
         exit_data = dict()
+        if code=='sh000001':
+            code = '999999'
         hist_df  =his[code].ROC(1) 
         hist_last_date = hist_df.tail(1).iloc[0].date
         #print('hist_last_date=',hist_last_date)

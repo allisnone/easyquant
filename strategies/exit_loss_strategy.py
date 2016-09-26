@@ -28,7 +28,10 @@ class Strategy(StrategyTemplate):
     def set_monitor_stocks(self):
         his_sql = StockSQL()
         hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
-        self.monitor_stocks = available_sells
+        except_codes = his_sql.get_except_codes()
+        #monitor_indexs = ['sh000001','399006']
+        available_sells = list(set(available_sells).difference(set(except_codes)))
+        self.monitor_stocks = available_sells# + monitor_indexs
             
 
     def strategy(self, event):
@@ -58,7 +61,7 @@ class Strategy(StrategyTemplate):
         self.log.info('动态止损监测股票：  %s'  % self.monitor_stocks)
         self.log.info('止损点：  %s'  % self.exit_data)
         self.log.info('行情推行股票 ：  %s'  % list(event.data.keys()))
-        if etime.is_tradetime(dt.datetime.now()) and etime.is_trade_date(dt.datetime.now()):
+        if True:#etime.is_tradetime(dt.datetime.now()) and etime.is_trade_date(dt.datetime.now()):
             for event_code in self.monitor_stocks:
                 if event_code in list(event.data.keys()):
                     event_data = event.data[event_code]

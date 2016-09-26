@@ -59,8 +59,12 @@ def get_stop_stocks(given_stocks=[]):
 #init_push_stocks = get_push_stocks(additional_stocks=['000002','300162'])
 
 his_sql = StockSQL()
-hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
-hold_stocks = hold_stocks + ['000002']
+#hold_df,hold_stocks,available_sells =his_sql.get_hold_stocks(accounts=['36005'])
+exit_monitor_stocks = his_sql.get_exit_monitor_stocks(self,accounts=['36005'])
+#print('except_codes=',except_codes)
+monitor_indexs = ['sh000001','399006']
+exit_monitors = exit_monitor_stocks + ['000002'] + monitor_indexs
+hold_stocks = list(set(exit_monitors).difference(set(except_codes)))
 #stop_stocks = get_stop_stocks(push_stocks)
 #print('stop_stocks=', stop_stocks)
 #print(len(stop_stocks))

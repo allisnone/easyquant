@@ -10,7 +10,7 @@ ACCOUNT_OBJECT_FILE = 'account.session'
 class StrategyTemplate:
     name = 'DefaultStrategyTemplate'
 
-    def __init__(self, log_handler, main_engine,stocks=[],additional_stocks=['000002'],except_stocks=['600556']):
+    def __init__(self, log_handler, main_engine,stocks=[],additional_stocks=['000002'],except_stocks=['600556','000001']):
         with open(ACCOUNT_OBJECT_FILE, 'rb') as f:
             self.user = dill.load(f)
             f.close()
@@ -41,9 +41,12 @@ class StrategyTemplate:
         init_push_stocks = list(set(init_push_stocks).difference(set(self.except_stocks)))
         if init_push_stocks:
             this_quotation = quotation.stocks(init_push_stocks)
+            if 'sh000001' in holding_stocks:
+                this_quotation['sh000001'] = this_quotation.pop('000001')
         else:
             this_quotation = quotation.all
         stop_stocks = []
+        
         print(list(this_quotation.keys()))
         for stock_code in list(this_quotation.keys()):
             if this_quotation[stock_code]:
