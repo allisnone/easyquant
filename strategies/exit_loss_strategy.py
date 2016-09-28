@@ -61,7 +61,7 @@ class Strategy(StrategyTemplate):
         self.log.info('动态止损监测股票：  %s'  % self.monitor_stocks)
         self.log.info('止损点：  %s'  % self.exit_data)
         self.log.info('行情推行股票 ：  %s'  % list(event.data.keys()))
-        if True:#etime.is_tradetime(dt.datetime.now()) and etime.is_trade_date(dt.datetime.now()):
+        if etime.is_tradetime(dt.datetime.now()) and etime.is_trade_date(dt.datetime.now()):
             for event_code in self.monitor_stocks:
                 if event_code in list(event.data.keys()):
                     event_data = event.data[event_code]
